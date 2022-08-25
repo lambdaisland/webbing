@@ -1,0 +1,19 @@
+{:paths ["src" "resources"]
+
+ :deps
+ {com.github.kepler16/gx.cljc {:git/url "https://github.com/kepler16/gx.cljc.git"
+                               :git/sha "925155ddbafcac6b544b36ae5bd42ddf496e7e73"}
+  aero/aero                   {:mvn/version "1.1.6"}
+  org.clojure/tools.namespace {:mvn/version "1.3.0"}
+  org.clojure/tools.cli       {:mvn/version "1.0.206"}
+  com.lambdaisland/dotenv     {:mvn/version "0.1.1"}
+  metosin/malli               {:mvn/version "0.8.9"}}
+
+ :aliases
+ {:dev
+  {:extra-paths ["dev"]
+   :extra-deps  {djblue/portal {:mvn/version "0.29.1"}}}
+
+  :test
+  {:extra-paths ["test"]
+   :extra-deps  {lambdaisland/kaocha {:mvn/version "1.69.1069"}}}}}
