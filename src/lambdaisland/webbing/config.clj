@@ -217,6 +217,8 @@
   (cond
     (map? s)                    (fn [k] (get s k))
     (fn? s)                     (fn [k] (s schemas k))
+    (instance? java.io.File s)  (when (.exists s)
+                                  (aero/read-config s aero-opts))
     (satisfies? io/IOFactory s) (aero/read-config s aero-opts)
     :else (throw (ex-info (str "A source for settings/secrets must be a map, function, or clojure.java.io/IOFactory, got "
                                (type s))
@@ -257,12 +259,7 @@
   (if (sequential? sources)
     (reduce
      (fn [acc c]
-       (merge-with
-        (fn [_ _]
-          (throw
-           (ex-info "Key provided by multiple configuration sources"
-                    (filter (set (keys acc))
-                            (keys c)))))
+       (merge
         acc
         (if (map? c)
           c

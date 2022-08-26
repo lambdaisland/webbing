@@ -16,7 +16,8 @@
   (:require [k16.gx.beta.system :as gx-sys]
             [lambdaisland.webbing.util :as util]
             [lambdaisland.webbing.config :as config]
-            [clojure.tools.namespace.repl :as repl]))
+            [clojure.tools.namespace.repl :as repl]
+            [lambdaisland.glogc :as log]))
 
 (create-ns 'webbing.restart-fns)
 (repl/disable-reload! (find-ns 'k16.gx.beta.system))
@@ -37,6 +38,12 @@
   within the same process."
   ::system)
 
+(defn system
+  ([]
+   (system *sys-id*))
+  ([sys-id]
+   (get @gx-sys/registry* sys-id)))
+
 (defn register!
   "Register the 'setup' for the dev system.
 
@@ -44,10 +51,12 @@
   system, but not yet start it."
   ([setup]
    (register! *sys-id* setup))
-  ([sys-id setup]
-   (let [graph (config/read-setup setup {:profile :dev})]
+  ([sys-id setup-sym]
+   (let [setup (doto ((requiring-resolve setup-sym)) prn)
+         graph (config/read-setup setup {:profile :dev})]
      (gx-sys/register! sys-id {:graph graph
-                               :lambdaisland.webbing/setup setup}))))
+                               :lambdaisland.webbing/setup setup
+                               :lambdaisland.webbing/setup-sym setup-sym}))))
 
 (defn unregister!
   "Remove the system from the gx registry again."
@@ -62,6 +71,7 @@
   Unwraps `java.util.concurrent.ExecutionException`, so you get an [[ex-info]]
   instead."
   [sys-id k & args]
+  {:pre [(get-in @gx-sys/registry* [sys-id :lambdaisland.webbing/setup])]}
   @(util/unwrap-concurrent-ex
     (apply gx-sys/signal! sys-id k args)))
 
@@ -74,8 +84,10 @@
    (start! nil))
   ([{:keys [keys sys-id]
      :or {sys-id *sys-id*}}]
-   (signal! sys-id :gx/start keys)
-   :started))
+   (let [keys (or keys (get-in @gx-sys/registry* [sys-id :lambdaisland.webbing/setup :keys]))]
+     (log/info :dev-system/starting {:keys (if (seq keys) keys :all) :sys-id sys-id})
+     (signal! sys-id :gx/start keys)
+     :started)))
 
 (defn stop!
   "Stop the dev system."
@@ -112,8 +124,9 @@
   ([]
    (restart *sys-id*))
   ([sys-id]
-   (register! (get-in @gx-sys/registry* [sys-id :lambdaisland.webbing/setup]))
-   (go)))
+   (prn "restarting" sys-id)
+   (register! sys-id (get-in @gx-sys/registry* [sys-id :lambdaisland.webbing/setup-sym]))
+   (go {:sys-id sys-id})))
 
 (defn bound-restart-sym []
   (let [restart-sym (gensym "webbing.restart-fns/restart")
