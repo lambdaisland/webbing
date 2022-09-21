@@ -261,7 +261,7 @@
      (fn [acc c]
        (merge
         acc
-        (if (map? c)
+        (if (or (nil? c) (map? c))
           c
           (aero/read-config c aero-opts))))
      {}
