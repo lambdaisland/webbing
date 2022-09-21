@@ -30,8 +30,7 @@
             [clojure.walk :as walk]
             [lambdaisland.dotenv :as dotenv]
             [muuntaja.core :as muuntaja]
-            [malli.core :as malli]
-            ))
+            [malli.core :as malli]))
 
 (defrecord Setting [k])
 (defrecord Secret [k])
@@ -214,16 +213,17 @@
   other types of values). They don't need to actually validate the schemas, this
   will be done afterwards on the returned value."
   [s {:keys [schemas aero-opts]}]
-  (cond
-    (map? s)                    (fn [k] (get s k))
-    (fn? s)                     (fn [k] (s schemas k))
-    (instance? java.io.File s)  (when (.exists s)
-                                  (aero/read-config s aero-opts))
-    (satisfies? io/IOFactory s) (aero/read-config s aero-opts)
-    :else (throw (ex-info (str "A source for settings/secrets must be a map, function, or clojure.java.io/IOFactory, got "
-                               (type s))
-                          {:type ::invalid-setting-source
-                           :source s}))))
+  (when s
+    (cond
+      (map? s)                    (fn [k] (get s k))
+      (fn? s)                     (fn [k] (s schemas k))
+      (instance? java.io.File s)  (when (.exists s)
+                                    (aero/read-config s aero-opts))
+      (satisfies? io/IOFactory s) (aero/read-config s aero-opts)
+      :else (throw (ex-info (str "A source for settings/secrets must be a map, function, or clojure.java.io/IOFactory, got "
+                                 (type s))
+                            {:type ::invalid-setting-source
+                             :source s})))))
 
 (defn settings-provider
   "Build up a combined settings provider from multiple sources.
@@ -235,7 +235,7 @@
   of the sources yield a value then an `ex-info` with
   `{:type ::missing-setting}` is thrown."
   [sources {:keys [schemas] :as opts}]
-  (let [sources (map #(settings-source % opts) sources)]
+  (let [sources (keep #(settings-source % opts) sources)]
     (fn [k]
       (let [value (some #(let [v (% k)]
                            (when (some? v)
