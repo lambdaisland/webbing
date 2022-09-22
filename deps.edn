@@ -1,9 +1,8 @@
 {:paths ["src" "resources"]
 
  :deps
- {com.github.kepler16/gx.cljc {:local/root "/home/arne/Transit/gx.cljc"}
-  #_{:git/url "https://github.com/kepler16/gx.cljc.git"
-     :git/sha "925155ddbafcac6b544b36ae5bd42ddf496e7e73"}
+ {com.github.kepler16/gx.cljc {:git/url "https://github.com/kepler16/gx.cljc.git"
+                               :git/sha "925155ddbafcac6b544b36ae5bd42ddf496e7e73"}
   aero/aero                   {:mvn/version "1.1.6"}
   org.clojure/tools.namespace {:mvn/version "1.3.0"}
   org.clojure/tools.cli       {:mvn/version "1.0.206"}
