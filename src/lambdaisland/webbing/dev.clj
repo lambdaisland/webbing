@@ -71,7 +71,8 @@
   Unwraps `java.util.concurrent.ExecutionException`, so you get an [[ex-info]]
   instead."
   [sys-id k & args]
-  {:pre [(get-in @gx-sys/registry* [sys-id :lambdaisland.webbing/setup])]}
+  (assert (get-in @gx-sys/registry* [sys-id :lambdaisland.webbing/setup])
+          (str "No setup found for " sys-id))
   @(util/unwrap-concurrent-ex
     (apply gx-sys/signal! sys-id k args)))
 
