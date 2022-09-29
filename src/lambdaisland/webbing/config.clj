@@ -29,7 +29,6 @@
             [clojure.tools.cli :as tools-cli]
             [clojure.walk :as walk]
             [lambdaisland.dotenv :as dotenv]
-            [muuntaja.core :as muuntaja]
             [malli.core :as malli]))
 
 (defrecord Setting [k])
