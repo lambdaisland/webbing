@@ -26,3 +26,8 @@
   (is (= (config/coerce-stringly [[:foo [:map]]] :foo "{:xxx 123}")
          {:xxx 123}))
   (is (thrown? Exception (config/coerce-stringly [[:foo [:map]]] :foo "{:xxx 123"))))
+
+(deftest settings-provider-test
+  (is (= false
+         ((config/settings-provider [{:my/key false}] {})
+          :my/key))))

@@ -236,10 +236,12 @@
   [sources {:keys [schemas] :as opts}]
   (let [sources (keep #(settings-source % opts) sources)]
     (fn [k]
-      (let [value (some #(let [v (% k)]
-                           (when (some? v)
-                             v))
-                        sources)]
+      (let [value (reduce (fn [_ source]
+                            (let [v (source k)]
+                              (when (some? v)
+                                (reduced v))))
+                          nil
+                          sources)]
         (when-let [schema (some-schema schemas k)]
           (when-not (malli/validate schema value)
             (throw (ex-info (str "Invalid value for setting " k ": " (pr-str value)
