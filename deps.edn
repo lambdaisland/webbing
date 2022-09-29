@@ -12,8 +12,8 @@
  :aliases
  {:dev
   {:extra-paths ["dev"]
-   :extra-deps  {djblue/portal {:mvn/version "0.29.1"}}}
+   :extra-deps  {djblue/portal {:mvn/version "0.30.0"}}}
 
   :test
   {:extra-paths ["test"]
-   :extra-deps  {lambdaisland/kaocha {:mvn/version "1.69.1069"}}}}}
+   :extra-deps  {lambdaisland/kaocha {:mvn/version "1.70.1086"}}}}}
