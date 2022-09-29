@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.lambdaisland</groupId>
   <artifactId>webbing</artifactId>
-  <version>0.2.13-alpha</version>
+  <version>0.3.17-alpha</version>
   <name>webbing</name>
   <description></description>
   <url>https://github.com/lambdaisland/webbing</url>
@@ -25,7 +25,7 @@
     <url>https://github.com/lambdaisland/webbing</url>
     <connection>scm:git:git://github.com/lambdaisland/webbing.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/lambdaisland/webbing.git</developerConnection>
-    <tag>2f3d29c2b45f129442d25dc6f8a972bd073e8d17</tag>
+    <tag>9bdf816ea8cd74d0b620ad49f387769095caa9ea</tag>
   </scm>
   <dependencies>
     <dependency>
@@ -86,7 +86,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <git-revision>2f3d29c2b45f129442d25dc6f8a972bd073e8d17</git-revision>
+              <git-revision>9bdf816ea8cd74d0b620ad49f387769095caa9ea</git-revision>
             </manifestEntries>
           </archive>
         </configuration>
