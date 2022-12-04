@@ -14,13 +14,13 @@
 To use the latest release, add the following to your `deps.edn` ([Clojure CLI](https://clojure.org/guides/deps_and_cli))
 
 ```
-com.lambdaisland/webbing {:mvn/version "0.3.17-alpha"}
+com.lambdaisland/webbing {:mvn/version "0.4.20-alpha"}
 ```
 
 or add the following to your `project.clj` ([Leiningen](https://leiningen.org/))
 
 ```
-[com.lambdaisland/webbing "0.3.17-alpha"]
+[com.lambdaisland/webbing "0.4.20-alpha"]
 ```
 <!-- /installation -->
 
