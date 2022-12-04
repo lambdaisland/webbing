@@ -1,10 +1,8 @@
 # Unreleased
 
-## Added
-
 ## Fixed
 
-## Changed
+- Make sure cli-args are checked even if no setting lookups happened
 
 # 0.3.17-alpha (2022-09-29 / 94baf91)
 

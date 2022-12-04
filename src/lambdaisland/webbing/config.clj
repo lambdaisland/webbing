@@ -37,6 +37,9 @@
 (defmethod aero/reader 'setting [_ _ k] (->Setting k))
 (defmethod aero/reader 'secret [_ _ k] (->Secret k))
 
+(defprotocol SettingsSource
+  (as-source [this schemas]))
+
 (defn key->env-var
   "Take the key used to identify a setting or secret, and turn it into a string
   suitable for use as an environment variable.
@@ -174,21 +177,19 @@
   ([]
    (cli-args *command-line-args*))
   ([args]
-   (let [parsed-args (memoize
-                      (fn [schemas]
-                        (tools-cli/parse-opts
-                         args
-                         (into [["-h" "--help" "Print help information"]]
-                               (schemas->cli-opts schemas)))))]
-     (fn [schemas k]
-       (let [{:keys [options summary errors]} (parsed-args schemas)]
+   (reify SettingsSource
+     (as-source [this schemas]
+       (let [{:keys [options summary errors]} (tools-cli/parse-opts
+                                               args
+                                               (into [["-h" "--help" "Print help information"]]
+                                                     (schemas->cli-opts schemas)))]
          (when (seq errors)
            (run! println errors)
            (System/exit 1))
          (when (:help options)
            (println summary)
            (System/exit 0))
-         (get options k))))))
+         options)))))
 
 (defn default-value []
   (fn [schemas k]
@@ -214,15 +215,27 @@
   [s {:keys [schemas aero-opts]}]
   (when s
     (cond
-      (map? s)                    (fn [k] (get s k))
-      (fn? s)                     (fn [k] (s schemas k))
-      (instance? java.io.File s)  (when (.exists s)
-                                    (aero/read-config s aero-opts))
-      (satisfies? io/IOFactory s) (aero/read-config s aero-opts)
-      :else (throw (ex-info (str "A source for settings/secrets must be a map, function, or clojure.java.io/IOFactory, got "
-                                 (type s))
-                            {:type ::invalid-setting-source
-                             :source s})))))
+      (map? s)
+      (fn [k] (get s k))
+
+      (fn? s)
+      (fn [k] (s schemas k))
+
+      (instance? java.io.File s)
+      (when (.exists s)
+        (aero/read-config s aero-opts))
+
+      (satisfies? SettingsSource s)
+      (as-source s schemas)
+
+      (satisfies? io/IOFactory s)
+      (aero/read-config s aero-opts)
+
+      :else
+      (throw (ex-info (str "A source for settings/secrets must be a map, function, or clojure.java.io/IOFactory, got "
+                           (type s))
+                      {:type   ::invalid-setting-source
+                       :source s})))))
 
 (defn settings-provider
   "Build up a combined settings provider from multiple sources.
@@ -234,7 +247,7 @@
   of the sources yield a value then an `ex-info` with
   `{:type ::missing-setting}` is thrown."
   [sources {:keys [schemas] :as opts}]
-  (let [sources (keep #(settings-source % opts) sources)]
+  (let [sources (doall (keep #(settings-source % opts) sources))]
     (fn [k]
       (let [value (reduce (fn [_ source]
                             (let [v (source k)]
@@ -269,8 +282,7 @@
      sources)
     (recur [sources] aero-opts)))
 
-(defn read-setup [{:as   setup
-                   :keys [sources schemas]}
+(defn read-setup [{:as setup :keys [sources schemas]}
                   aero-opts]
   (let [{:keys [settings secrets config]} sources
         setting-provider (settings-provider settings {:aero-opts aero-opts
