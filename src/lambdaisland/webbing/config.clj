@@ -36,6 +36,7 @@
 
 (defmethod aero/reader 'setting [_ _ k] (->Setting k))
 (defmethod aero/reader 'secret [_ _ k] (->Secret k))
+(defmethod aero/reader 'resource [_ _ v] (io/resource v))
 
 (defprotocol SettingsSource
   (as-source [this schemas]))
@@ -183,9 +184,6 @@
                                                args
                                                (into [["-h" "--help" "Print help information"]]
                                                      (schemas->cli-opts schemas)))]
-         (when (seq errors)
-           (run! println errors)
-           (System/exit 1))
          (when (:help options)
            (println summary)
            (System/exit 0))
@@ -285,10 +283,11 @@
 (defn read-setup [{:as setup :keys [sources schemas]}
                   aero-opts]
   (let [{:keys [settings secrets config]} sources
-        setting-provider (settings-provider settings {:aero-opts aero-opts
-                                                      :schemas (:settings schemas)})
-        secret-provider (settings-provider secrets {:aero-opts aero-opts
-                                                    :schemas (:secrets schemas)})]
+        opts {:aero-opts aero-opts
+              :schemas (concat (:settings schemas)
+                               (:secrets schemas))}
+        setting-provider (settings-provider settings opts)
+        secret-provider (settings-provider secrets opts)]
     (walk/postwalk
      (fn [o]
        (cond

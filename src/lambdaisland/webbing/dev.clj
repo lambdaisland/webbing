@@ -52,7 +52,7 @@
   ([setup]
    (register! *sys-id* setup))
   ([sys-id setup-sym]
-   (let [setup (doto ((requiring-resolve setup-sym)) prn)
+   (let [setup ((requiring-resolve setup-sym))
          graph (config/read-setup setup {:profile :dev})]
      (gx-sys/register! sys-id {:graph graph
                                :lambdaisland.webbing/setup setup
