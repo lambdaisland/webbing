@@ -1,4 +1,4 @@
-# Unreleased
+# 0.5.24-alpha (2023-10-03 / 8082b04)
 
 ## Changed
 
