@@ -3,24 +3,24 @@
  :deps
  {;; using our own fork for now, since we need a version that's in a public
   ;; maven repository. github's repos don't qualify, they always require auth.
-  com.lambdaisland/gx.cljc {:mvn/version "0.1.248-alpha"}
+  com.lambdaisland/gx.cljc {:mvn/version "0.2.294-alpha"}
   ;;kepler16/gx.cljc            {:mvn/version "2.7.3"}
 
 
   aero/aero                   {:mvn/version "1.1.6"}
-  org.clojure/tools.namespace {:mvn/version "1.3.0"}
-  org.clojure/tools.cli       {:mvn/version "1.0.206"}
-  com.lambdaisland/dotenv     {:mvn/version "0.1.1"}
-  metosin/malli               {:mvn/version "0.8.9"}}
+  org.clojure/tools.namespace {:mvn/version "1.4.4"}
+  org.clojure/tools.cli       {:mvn/version "1.0.219"}
+  com.lambdaisland/dotenv     {:mvn/version "0.2.5"}
+  metosin/malli               {:mvn/version "0.13.0"}}
 
  :aliases
  {:dev
   {:extra-paths ["dev"]
-   :extra-deps  {djblue/portal {:mvn/version "0.30.0"}}}
+   :extra-deps  {djblue/portal {:mvn/version "0.48.0"}}}
 
   :test
   {:extra-paths ["test"]
-   :extra-deps  {lambdaisland/kaocha {:mvn/version "1.70.1086"}}}}
+   :extra-deps  {lambdaisland/kaocha {:mvn/version "1.87.1366"}}}}
 
  :mvn/repos {"github-kepler-gx"
              {:url "https://maven.pkg.github.com/kepler16/gx.cljc"}}}
