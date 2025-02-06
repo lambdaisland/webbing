@@ -13,11 +13,12 @@
 
   Note that this is already a fairly drastic operation, when making good use of
   a REPL you should only occasionally need to call `reset`/`reset-all`."
-  (:require [k16.gx.beta.system :as gx-sys]
-            [lambdaisland.webbing.util :as util]
-            [lambdaisland.webbing.config :as config]
-            [clojure.tools.namespace.repl :as repl]
-            [lambdaisland.glogc :as log]))
+  (:require
+   [k16.gx.beta.system :as gx-sys]
+   [lambdaisland.webbing.util :as util]
+   [lambdaisland.webbing.config :as config]
+   [clojure.tools.namespace.repl :as repl]
+   [lambdaisland.glogc :as log]))
 
 (create-ns 'webbing.restart-fns)
 (repl/disable-reload! (find-ns 'k16.gx.beta.system))
